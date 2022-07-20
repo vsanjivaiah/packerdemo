@@ -1,0 +1,18 @@
+---
+- name: "Copy FSLogix installers files from unc "
+  win_copy:
+    src: "{{mount_path}}{{fslogix_src_dir}}"
+    dest: "{{citrix_path}}"
+
+- name: "Run Installer FSLogix"
+  win_package:
+    path: "{{citrix_path}}{{fslogix_src_dir}}\\{{item.name}}"
+    product_id: "{{item.product_id}}"
+    arguments:
+      - /quiet
+      - /norestart
+    state: present
+  register: fslogix
+  with_items: "{{fslogix_installers}}"
+...
+

@@ -1,0 +1,9 @@
+ansible_connection: winrm
+ansible_winrm_transport: ntlm
+ansible_winrm_server_cert_validation: ignore
+ansible_winrm_read_timeout_sec: 150
+ansible_port: 5986
+
+mount_path: "/mnt/packages/"
+
+citrix_path: C:\Packages\

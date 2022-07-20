@@ -1,0 +1,24 @@
+locals {
+  managed_image_name = "AZUVNVDMAVDI006-OS-${formatdate("YYYYMMDD", timestamp())}-Master"
+  snapshot_name      = "AZUVNVDMAVDI006_OS_${formatdate("YYYYMMDD", timestamp())}_Master_snapshot"
+}
+source "azure-arm" "windows" {
+    subscription_id = "Your Subscription ID"
+    client_id = "Your Client ID"
+    client_secret = "Your Client Secret"
+    image_publisher = "MicrosoftWindowsDesktop"
+    image_offer = "Windows-10"
+    image_sku = "win10-21h2-ent"
+    managed_image_name = "${local.managed_image_name}" 
+    managed_image_resource_group_name = "workshopdemo"
+    managed_image_os_disk_snapshot_name    = "${local.snapshot_name}"
+    location = "westus2"
+    vm_size  = "Standard_D4s_v4"
+    private_virtual_network_with_public_ip = true
+    os_type = "windows"
+    winrm_insecure = true
+    communicator  = "winrm"
+    winrm_use_ssl = true
+    winrm_timeout = "5m"
+    winrm_username = "packer"
+}

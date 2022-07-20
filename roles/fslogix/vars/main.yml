@@ -1,0 +1,7 @@
+fslogix_src_dir: "fxlogics"
+fslogix_product_id: "control"
+
+fslogix_installers:
+  - {name: "FSLogixAppsSetup.exe", product_id: "fslogix"}
+  - {name: "FSLogixAppsRuleEditorSetup.exe", product_id: "fslogix"}
+  - {name: "FSLogixAppsJavaRuleEditorSetup.exe", product_id: "fslogix"}

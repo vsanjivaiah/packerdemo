@@ -1,0 +1,147 @@
+---
+# This was disabled from gold image and is needed for VDA install
+- name: Start Spooler service 
+  win_service:
+    name: spooler
+    state: started
+    start_mode: auto
+
+- name: Create Packages folder
+  win_file:
+    path: C:\Packages
+    state: directory
+
+- name: copy VDA Agent from UNC Path
+  win_copy:
+    src: "{{mount_path}}{{vda_src_dir}}"
+    dest: "{{citrix_path}}"
+  register: file_changed
+
+- name: Create Log Folder
+  win_file:
+    path: C:\Logs
+    state: directory
+
+- name: Phase 1 Install VDA Components
+  win_package:
+    path: "{{citrix_path}}{{vda_src_dir}}\\{{vda_installer_name}}"
+    arguments: /noreboot /quiet /enable_remote_assistance /disableexperiencemetrics /virtualmachine /noresume /logpath 'C:\LOGS' /enable_real_time_transport /enable_hdx_ports /enable_hdx_udp_ports /components vda /mastermcsimage /includeadditional "{{vda_roles_UPC}}","{{vda_roles_MIS}}","{{vda_roles_UPM}}","{{vda_roles_WMI}}"
+    state: present
+    expected_return_code: [0, 3, 3010]
+    creates_service: BrokerAgent
+  register: vda_install
+  when: file_changed.changed 
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    ansible_become_user: "{{ansible_user}}"
+    ansible_become_password: "{{ansible_password}}"
+  #ignore_errors: true
+
+# - name: Ensure user faadmin is present
+#   win_user:
+#     name: faadmin
+#     password: TALK!amount!81
+#     state: present
+#     groups:
+#       - Administrators
+
+# - name: Wait for file C:\temp\log.txt to exist before continuing
+#   win_wait_for:
+#     path: C:\temp\filenotexist.txt
+#     timeout: 15000
+
+
+- name: Phase 1 Reboot after VDA
+  win_reboot:
+  when: vda_install.changed
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    ansible_become_user: "{{ansible_user}}"
+    ansible_become_password: "{{ansible_password}}"
+
+- name: Phase 2 Check VDA Setup File Exist in Program Data 
+  win_stat:
+    path: C:\ProgramData\Citrix\XenDesktopSetup\XenDesktopVdaSetup.exe
+  register: resume_file
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    ansible_become_user: "{{ansible_user}}"
+    ansible_become_password: "{{ansible_password}}"
+
+- name: Phase 2 Resume VDA Install 
+  win_package:
+    path: C:\ProgramData\Citrix\XenDesktopSetup\XenDesktopVdaSetup.exe
+    state: present
+    expected_return_code: [0, 3, 3010]
+    creates_service: BrokerAgent
+  when: resume_file.stat.exists
+  register: vda_resume
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    ansible_become_user: "{{ansible_user}}"
+    ansible_become_password: "{{ansible_password}}"
+
+- name: Phase 2 Reboot after vda install
+  win_reboot:
+  when: vda_resume.changed
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    ansible_become_user: "{{ansible_user}}"
+    ansible_become_password: "{{ansible_password}}"
+
+- name: Phase 3 Check VDA Setup File Exist in Program Data 
+  win_stat:
+    path: C:\ProgramData\Citrix\XenDesktopSetup\XenDesktopVdaSetup.exe
+  register: resume_file
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    ansible_become_user: "{{ansible_user}}"
+    ansible_become_password: "{{ansible_password}}"
+
+- name: Phase 3 Resume VDA Install 
+  win_package:
+    path: C:\ProgramData\Citrix\XenDesktopSetup\XenDesktopVdaSetup.exe
+    state: present
+    expected_return_code: [0, 3, 3010]
+    creates_service: BrokerAgent
+  when: resume_file.stat.exists
+  register: vda_resume
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    ansible_become_user: "{{ansible_user}}"
+    ansible_become_password: "{{ansible_password}}"
+
+- name: Phase 3 Reboot after vda install
+  win_reboot:
+  when: vda_resume.changed
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    ansible_become_user: "{{ansible_user}}"
+    ansible_become_password: "{{ansible_password}}"
+  
+- name: Change Disk Part SAN Policy to OnlineAll
+  win_shell: |
+    Set-StorageSetting -NewDiskPolicy OnlineAll 
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    ansible_become_user: "{{ansible_user}}"
+    ansible_become_password: "{{ansible_password}}"
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,12 @@
+---
+#vda_roles: "'Citrix MCS IODriver','Citrix Universal Print Client','Citrix Supportability Tools','Machine Identity Service','Citrix Profile Management','Citrix Profile Management WMI Plugin'"
+vda_roles_MCS: "Citrix MCS IODriver"
+vda_roles_UPC: "Citrix Universal Print Client"
+vda_roles_MIS: "Machine Identity Service"
+vda_roles_UPM: "Citrix Profile Management"
+vda_roles_WMI: "Citrix Profile Management WMI Plugin"
+#vda_agent_source_path: "/mnt/tmp/VDA2106/VDAServerSetup_2106.exe"
+vda_agent_source_path: "/mnt/tmp/VDA2112/VDAServerSetup_2112.exe"
+
+vda_src_dir: "vdasinglesession"
+vda_installer_name: "VDAWorkstationSetup_2203.exe"

@@ -1,0 +1,15 @@
+---
+- hosts: windows
+  vars:
+    ansible_connection: winrm
+    ansible_winrm_transport: ntlm
+    ansible_winrm_server_cert_validation: ignore
+    ansible_winrm_read_timeout_sec: 150
+    ansible_port: 5986
+
+    
+  roles:
+    - vdainstall_single_session
+    - fslogix
+    - adobe_reader_dc
+    - coreapps
